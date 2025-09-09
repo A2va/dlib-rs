@@ -6,7 +6,7 @@ extern crate lazy_static;
 
 use std::path::*;
 
-use dlib_face_recognition::*;
+use dlib::*;
 
 use image::*;
 

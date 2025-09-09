@@ -1,6 +1,6 @@
-# dlib-face-recognition
+# dlib
 
-[![Current Crates.io Version](https://img.shields.io/crates/v/dlib-face-recognition.svg)](https://crates.io/crates/dlib-face-recognition)
+This is a fork of [dlib-face-recognition](https://github.com/ulagbulag/dlib-face-recognition), aiming to introduce [xmake-rs](https://github.com/A2va/xmake-rs) to an existing project and serve as an example/playground.
 
 Inspired by [a similar python library](https://github.com/ageitgey/face_recognition), 
 `dlib-face-recognition` is a Rust library that binds to certain specific features of the [dlib C++ library](https://github.com/davisking/dlib).
@@ -16,7 +16,7 @@ These include:
 
 ## Original Working
 
-The original work is [here (unmaintaned; since Aug 2021)](https://github.com/expenses/face_recognition).
+The original work is [here](https://github.com/ulagbulag/dlib-face-recognition).
 
 ## Building
 
@@ -44,15 +44,7 @@ Besides, you may claim us whether the specific platform should support it throug
 For Windows, [ `vcpkg` ](https://vcpkg.io/en/getting-started.html) may help building both `Blas` and `lapack` .
 For other platforms such as Linux, package managers should support installing them.
 
-#### Installing Dependencies
 
-##### ArchLinux
-```sh
-sudo pacman -S blas-openblas cmake
-
-# optional[dlib]
-paru -S dlib
-```
 
 ### Building Native library
 

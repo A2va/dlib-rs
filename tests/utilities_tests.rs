@@ -1,4 +1,4 @@
-use dlib_face_recognition::FaceEncoding;
+use dlib::FaceEncoding;
 
 #[test]
 fn encoding_transformation() {
