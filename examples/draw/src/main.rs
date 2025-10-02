@@ -1,5 +1,5 @@
 use image::*;
-use dlib_face_recognition::*;
+use dlib::*;
 use clap::Parser;
 
 mod args;

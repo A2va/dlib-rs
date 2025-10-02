@@ -1,5 +1,5 @@
-use dlib_face_recognition::*;
-use dlib_face_recognition::FaceDetectorCnn;
+use dlib::*;
+use dlib::FaceDetectorCnn;
 use clap::Parser;
 
 mod args;
