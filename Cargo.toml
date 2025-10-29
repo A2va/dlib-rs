@@ -36,7 +36,7 @@ embed-lp = ["embed-any"]
 cpp = "0.5"
 image = { version = "0.24", default-features = false }
 bzip2 = { version = "0.4", optional = true }
-reqwest = { version = "0.11", optional = true, features = ["blocking"] }
+reqwest = { version = "0.12", optional = true, features = ["blocking", "rustls-tls"] }
 
 [build-dependencies]
 cpp_build = "0.5"
