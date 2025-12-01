@@ -26,15 +26,34 @@ cpp_class!(unsafe struct FaceDetectorCnnInner as "face_detection_cnn");
 impl FaceDetectorCnn {
     #[cfg(feature = "embed-fd-nn")]
     pub fn default() -> Result<Self, String> {
-        use crate::embed::{check_file_or_download, ModelFile};
+        let inner = FaceDetectorCnnInner::default();
+        let bytes = include_bytes!(concat!(env!("OUT_DIR"), "/face_detector.dat"));
 
-        let filename = ModelFile::FaceDetectorCnn;
+        let deserialized = unsafe {
+            let network = &inner;
+            let len = bytes.len();
+            let ptr = bytes.as_ptr();
 
-        let default_filepath = crate::embed::path_for_file(&filename);
+            cpp!([ptr as "unsigned char*", len as "std::size_t", network as "face_detection_cnn*"] -> bool as "bool" {
+                try {
+                    std::string buffer(reinterpret_cast<const char*>(ptr), len);
+                    std::istringstream iss(buffer, std::ios::binary);
+                    dlib::deserialize(iss) >> *network;
+                    return true;
+                } catch (const dlib::error& exception) {
+                    return false;
+                }
+            })
+        };
 
-        check_file_or_download(&filename);
-
-        Self::open(default_filepath)
+        if !deserialized {
+            Err("Failed to deserialize CNN model".to_string())
+        } else {
+            Ok(Self {
+                inner,
+                data: std::marker::PhantomData::default(),
+            })
+        }
     }
 
     /// Create a new face detector from a filename

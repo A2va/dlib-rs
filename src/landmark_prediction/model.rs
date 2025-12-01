@@ -17,15 +17,31 @@ cpp_class!(unsafe struct LandmarkPredictorInner as "dlib::shape_predictor");
 impl LandmarkPredictor {
     #[cfg(feature = "embed-lp")]
     pub fn default() -> Result<Self, String> {
-        use crate::embed::{check_file_or_download, ModelFile};
+        let inner = LandmarkPredictorInner::default();
+        let bytes = include_bytes!(concat!(env!("OUT_DIR"), "/face_recognition.dat"));
 
-        let filename = ModelFile::LandmarkPredictor;
+        let deserialized = unsafe {
+            let predictor = &inner;
+            let len = bytes.len();
+            let ptr = bytes.as_ptr();
 
-        let default_filepath = crate::embed::path_for_file(&filename);
+            cpp!([ptr as "unsigned char*", len as "std::size_t", predictor as "dlib::shape_predictor*"] -> bool as "bool" {
+                try {
+                    std::string buffer(reinterpret_cast<const char*>(ptr), len);
+                    std::istringstream iss(buffer, std::ios::binary);
+                    dlib::deserialize(iss) >> *predictor;
+                    return true;
+                } catch (const dlib::error& exception) {
+                    return false;
+                }
+            })
+        };
 
-        check_file_or_download(&filename);
-
-        Self::open(default_filepath)
+        if !deserialized {
+            Err("Failed to deserialize Landmark model".to_string())
+        } else {
+            Ok(Self { inner })
+        }
     }
 
     /// Deserialize the landmark predictor from a file path.

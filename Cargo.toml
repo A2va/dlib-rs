@@ -24,9 +24,8 @@ features = ["build-native"] # otherwise the build will fail in docs.rs
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
-embed-any = ["reqwest", "bzip2"]
+embed-any = []
 
 embed-fd-nn = ["embed-any"]
 embed-fe-nn = ["embed-any"]
@@ -35,13 +34,13 @@ embed-lp = ["embed-any"]
 [dependencies]
 cpp = "0.5"
 image = { version = "0.24", default-features = false }
-bzip2 = { version = "0.4", optional = true }
-reqwest = { version = "0.12", optional = true, features = ["blocking", "rustls-tls"] }
 
 [build-dependencies]
 cpp_build = "0.5"
 xmake = { git = "https://github.com/A2va/xmake-rs", branch = "main" }
 sys-info = "0.9"
+reqwest = { version = "0.12", features = ["blocking", "rustls-tls"] }
+bzip2 = { version = "0.6" }
 
 [dev-dependencies]
 lazy_static = "1.5"

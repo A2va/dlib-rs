@@ -25,15 +25,34 @@ cpp_class!(unsafe struct FaceEncoderNetworkInner as "face_encoding_nn");
 impl FaceEncoderNetwork {
     #[cfg(feature = "embed-fe-nn")]
     pub fn default() -> Result<Self, String> {
-        use crate::embed::{check_file_or_download, ModelFile};
+        let inner = FaceEncoderNetworkInner::default();
+        let bytes = include_bytes!(concat!(env!("OUT_DIR"), "/face_recognition.dat"));
 
-        let filename = ModelFile::FaceEncoderNetwork;
+        let deserialized = unsafe {
+            let network = &inner;
+            let len = bytes.len();
+            let ptr = bytes.as_ptr();
 
-        let default_filepath = crate::embed::path_for_file(&filename);
+            cpp!([ptr as "unsigned char*", len as "std::size_t", network as "face_encoding_nn*"] -> bool as "bool" {
+                try {
+                    std::string buffer(reinterpret_cast<const char*>(ptr), len);
+                    std::istringstream iss(buffer, std::ios::binary);
+                    dlib::deserialize(iss) >> *network;
+                    return true;
+                } catch (const dlib::error& exception) {
+                    return false;
+                }
+            })
+        };
 
-        check_file_or_download(&filename);
-
-        Self::open(default_filepath)
+        if !deserialized {
+            Err("Failed to deserialize encoder model".to_string())
+        } else {
+            Ok(Self {
+                inner,
+                data: std::marker::PhantomData::default(),
+            })
+        }
     }
 
     /// Deserialize the face encoding network from a file path.

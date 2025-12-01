@@ -2,6 +2,33 @@ use std::env;
 
 use xmake::{Config, Source};
 
+mod embed {
+    use std::env;
+    use std::path::{Path, PathBuf};
+
+    fn download_file_if_necessary_and_unzip<P: AsRef<Path>>(url: &str, path: P) {
+        use bzip2::read::*;
+        let path = path.as_ref();
+        if path.exists() {
+            return;
+        }
+
+        println!("url {}", url);
+
+        let response = reqwest::blocking::get(url).unwrap();
+        let mut decoded = BzDecoder::new(response);
+        let mut file = std::fs::File::create(&path).unwrap();
+        std::io::copy(&mut decoded, &mut file).unwrap();
+    }
+
+    pub fn download(file: &str, url: &str) {
+        let cargo_out_dir = env::var("OUT_DIR").expect("OUT_DIR env is not set");
+        let path = PathBuf::from(cargo_out_dir);
+
+        download_file_if_necessary_and_unzip(url, path.join(file));
+    }
+}
+
 fn main() {
     // Disable building for doc.rs
     if std::env::var("DOCS_RS").is_ok() {
@@ -40,8 +67,34 @@ fn main() {
     for path in includedirs {
         cpp.include(path);
     }
-
     cpp.flag("-std=c++14").build("src/lib.rs");
+
+    if cfg!(feature = "embed-fd-nn") {
+        embed::download(
+            "face_detector.dat",
+            "https://dlib.net/files/mmod_human_face_detector.dat.bz2",
+        );
+    }
+
+    if cfg!(feature = "embed-lp") {
+        embed::download(
+            "face_landmarks.dat",
+            "https://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2",
+        );
+    }
+
+    if cfg!(feature = "embed-fe-nn") {
+        embed::download(
+            "face_recognition.dat",
+            "https://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2",
+        );
+    }
+
+    println!("cargo:rerun-if-changed=build.rs");
+
+    println!("cargo:rerun-if-env-changed=CARGO_FEATURE_EMBED_FD_NN");
+    println!("cargo:rerun-if-env-changed=CARGO_FEATURE_EMBED_FE_NN");
+    println!("cargo:rerun-if-env-changed=CARGO_FEATURE_EMBED_LP");
 }
 
 fn get_supported_target_features() -> std::collections::HashSet<String> {

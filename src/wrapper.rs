@@ -5,6 +5,8 @@ cpp! {{
     #include <dlib/image_transforms.h>
     #include <dlib/matrix/matrix_math_functions_abstract.h>
 
+    #include <stddef.h>
+
     // face encoding network definition from
     // https://github.com/davisking/dlib/blob/master/tools/python/src/face_recognition.cpp
 
