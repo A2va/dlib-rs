@@ -18,7 +18,7 @@ impl LandmarkPredictor {
     #[cfg(feature = "embed-lp")]
     pub fn default() -> Result<Self, String> {
         let inner = LandmarkPredictorInner::default();
-        let bytes = include_bytes!(concat!(env!("OUT_DIR"), "/face_recognition.dat"));
+        let bytes = include_bytes!(concat!(env!("OUT_DIR"), "/face_landmarks.dat"));
 
         let deserialized = unsafe {
             let predictor = &inner;
