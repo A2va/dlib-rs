@@ -53,8 +53,23 @@ impl FaceDetectorTrait for FaceDetector {
         let detector = &self.inner;
 
         unsafe {
-            cpp!([detector as "dlib::frontal_face_detector*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<dlib::rectangle>"  {
-                return (*detector)(*image);
+            cpp!([detector as "dlib::frontal_face_detector*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<Rectangle>"  {
+                std::vector<std::pair<double, dlib::rectangle>> detections;
+                (*detector)(*image, detections);
+
+                std::vector<Rectangle> rects;
+                rects.reserve(detections.size());
+
+                for (auto &detection: detections) {
+                    rects.push_back(Rectangle{
+                                    .left = detection.second.left(),
+                                    .top = detection.second.top(),
+                                    .right = detection.second.right(),
+                                    .bottom = detection.second.bottom(),
+                                    .confidence = detection.first});
+                }
+
+                return rects;
             })
         }
     }
@@ -71,13 +86,18 @@ fn test_face_detection() {
     let locations = detector.face_locations(&matrix);
 
     assert_eq!(locations.len(), 1);
-    assert_eq!(
-        locations[0],
-        Rectangle {
-            left: 305,
-            top: 113,
-            right: 520,
-            bottom: 328
-        }
-    );
+    assert_eq!(locations[0].left, 305);
+    assert_eq!(locations[0].top, 113);
+    assert_eq!(locations[0].right, 520);
+    assert_eq!(locations[0].bottom, 328);
+    // assert_eq!(
+    //     locations[0],
+    //     Rectangle {
+    //         left: 305,
+    //         top: 113,
+    //         right: 520,
+    //         bottom: 328,
+    //         confidence: 0.0
+    //     }
+    // );
 }

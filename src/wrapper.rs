@@ -6,6 +6,7 @@ cpp! {{
     #include <dlib/matrix/matrix_math_functions_abstract.h>
 
     #include <stddef.h>
+    #include <utility>
 
     // face encoding network definition from
     // https://github.com/davisking/dlib/blob/master/tools/python/src/face_recognition.cpp
@@ -63,4 +64,12 @@ cpp! {{
         }
         return crops;
     }
+
+    struct Rectangle {
+        long left;
+        long top;
+        long right;
+        long bottom;
+        double confidence;
+    };
 }}

@@ -1,4 +1,4 @@
-use std::{ops::Deref, os::raw::c_long};
+use std::{ffi::c_double, ffi::c_long, ops::Deref};
 
 #[derive(Copy, Clone, Default, Debug, PartialEq, Eq)]
 #[repr(C)]
@@ -41,6 +41,7 @@ pub struct Rectangle {
     pub top: c_long,
     pub right: c_long,
     pub bottom: c_long,
+    pub confidence: c_double,
 }
 
 impl Rectangle {
