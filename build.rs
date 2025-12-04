@@ -67,7 +67,13 @@ fn main() {
     for path in includedirs {
         cpp.include(path);
     }
-    cpp.flag("-std=c++14").build("src/lib.rs");
+
+    if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+        cpp.flag("/std:c++20");
+    } else {
+        cpp.flag("-std=c++20");
+    }
+    cpp.build("src/lib.rs");
 
     if cfg!(feature = "embed-fd-nn") {
         embed::download(

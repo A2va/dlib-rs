@@ -65,7 +65,7 @@ cpp! {{
         return crops;
     }
 
-    struct Rectangle {
+    struct CxxRectangle {
         long left;
         long top;
         long right;

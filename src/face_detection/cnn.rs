@@ -94,17 +94,18 @@ impl FaceDetectorTrait for FaceDetectorCnn {
         let detector = &self.inner;
 
         unsafe {
-            cpp!([detector as "face_detection_cnn*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<Rectangle>" {
+            cpp!([detector as "face_detection_cnn*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<CxxRectangle>" {
                 std::vector<dlib::mmod_rect> detections = (*detector)(*image);
                 // Convert from mmod rectangles
                 // see: https://github.com/davisking/dlib/blob/master/dlib/image_processing/full_object_detection.h#L132
                 // to regular rectangles
 
-                std::vector<Rectangle> rects;
+                std::vector<CxxRectangle> rects;
                 rects.reserve(detections.size());
 
                 for (auto &detection: detections) {
-                    rects.push_back(Rectangle{.left = detection.rect.left(),
+                    rects.push_back(CxxRectangle{
+                                    .left = detection.rect.left(),
                                     .top = detection.rect.top(),
                                     .right = detection.rect.right(),
                                     .bottom = detection.rect.bottom(),

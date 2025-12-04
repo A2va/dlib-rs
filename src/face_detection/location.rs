@@ -6,7 +6,7 @@ use crate::geometry::Rectangle;
 
 cpp_class!(
     /// A rust wrapper around a `std::vector<rectangle>`.
-    pub unsafe struct FaceLocations as "std::vector<Rectangle>"
+    pub unsafe struct FaceLocations as "std::vector<CxxRectangle>"
 );
 
 impl Deref for FaceLocations {
@@ -14,7 +14,7 @@ impl Deref for FaceLocations {
 
     fn deref(&self) -> &Self::Target {
         let len = unsafe {
-            cpp!([self as "std::vector<Rectangle>*"] -> usize as "size_t" {
+            cpp!([self as "std::vector<CxxRectangle>*"] -> usize as "size_t" {
                 return self->size();
             })
         };
@@ -23,7 +23,7 @@ impl Deref for FaceLocations {
             &[]
         } else {
             unsafe {
-                let pointer = cpp!([self as "std::vector<Rectangle>*"] -> *const Rectangle as "Rectangle*" {
+                let pointer = cpp!([self as "std::vector<CxxRectangle>*"] -> *const Rectangle as "CxxRectangle*" {
                     return &(*self)[0];
                 });
 

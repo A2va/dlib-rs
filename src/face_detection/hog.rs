@@ -53,15 +53,15 @@ impl FaceDetectorTrait for FaceDetector {
         let detector = &self.inner;
 
         unsafe {
-            cpp!([detector as "dlib::frontal_face_detector*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<Rectangle>"  {
+            cpp!([detector as "dlib::frontal_face_detector*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<CxxRectangle>"  {
                 std::vector<std::pair<double, dlib::rectangle>> detections;
                 (*detector)(*image, detections);
 
-                std::vector<Rectangle> rects;
+                std::vector<CxxRectangle> rects;
                 rects.reserve(detections.size());
 
                 for (auto &detection: detections) {
-                    rects.push_back(Rectangle{
+                    rects.push_back(CxxRectangle{
                                     .left = detection.second.left(),
                                     .top = detection.second.top(),
                                     .right = detection.second.right(),
